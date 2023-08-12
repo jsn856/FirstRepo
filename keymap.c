@@ -14,7 +14,7 @@ enum custom_keycodes {
 
  const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
- [_LAYER0] = LAYOUT(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSLS, KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_MINS, KC_LCTL, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT, KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LBRC, KC_RBRC, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, KC_LGUI, TT(1), KC_LALT, KC_SPC, KC_ENT, KC_BSPC, TT(2), KC_RGUI),
+[_LAYER0] = LAYOUT(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSLS, KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_MINS, KC_LCTL, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT, KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LBRC, KC_RBRC, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, KC_LGUI, TT(1), KC_LALT, KC_SPC, KC_ENT, KC_BSPC, TT(2), KC_RGUI),
 
 [_LAYER1] = LAYOUT(KC_TRNS, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_CIRC, KC_TRNS, KC_F6, KC_NO, KC_UP, KC_NO, KC_NO, KC_MEDIA_PLAY_PAUSE, KC_P4, KC_P5, KC_P6, KC_LPRN, KC_RPRN, RCS(KC_NO), KC_TRNS, KC_LEFT, KC_DOWN, KC_RGHT, KC_TRNS, KC_AUDIO_VOL_UP, KC_P1, KC_P2, KC_P3, KC_PMNS, KC_PSLS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_AUDIO_MUTE, KC_AUDIO_VOL_DOWN, KC_EQL, KC_P0, KC_PDOT, KC_PPLS, KC_PAST, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
 
@@ -25,14 +25,50 @@ enum custom_keycodes {
 
 #ifdef OLED_ENABLE
 
+oled_rotation_t oled_init_user(oled_rotation_t rotation) { return OLED_ROTATION_270; }
+
+
+bool oled_task_user(void) {
+    // Host Keyboard Layer Status
+    oled_write_P(PSTR("\n\n\n\n"), false);
+
+    switch (get_highest_layer(layer_state)) {
+        case _LAYER0:
+            oled_write_P(PSTR("HOME\n"), false);
+            break;
+        case _LAYER1:
+            oled_write_P(PSTR("\nUPPER\n"), false);
+            break;
+        case _LAYER2:
+            oled_write_P(PSTR("\n\nLOWER\n"), false);
+            break;
+        default:
+            // Or use the write_ln shortcut over adding '\n' to the end of your string
+            oled_write_ln_P(PSTR("Undefined"), false);
+    }
+
+    // Host Keyboard LED Status
+    led_t led_state = host_keyboard_led_state();
+ 
+    oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
+    oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
+    
+    return false;
+}
+#endif
+
+
+
+/* #ifdef OLED_ENABLE
+
 bool oled_task_user() {
 	oled_set_cursor(0, 1);
-	oled_write("Hello dawg :)", false);
+	oled_write_ln("Hello dawg :)", false);
 	return false;
 	
 }
 
-#endif
+#endif */
 
 
 
